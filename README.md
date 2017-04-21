@@ -39,18 +39,20 @@ false, the first charcater of each line will be overwritten as well. There
 is no need to adjust parameter `nmj` for the number of output (i.e. true)
 reactions as it is automatically calculated by the programme.
 
-You also need to stay to the overall file format, i.e.:
+You also need to stay to the overall file format with key words used by
+TUV 5.2. The programme will search for `===== Available photolysis reactions:`
+to identify the beginning of the reaction scheme and for
+`===...`
+to identify the end.
 
-- ll. 1 - 19: Header
-- ll. 20 - 47: Spectral weighting functions
-- l. 48: Label for beginning of photolysis reactions
-- '===...' for end of photolysis reactions
 
 Running the programme
 ---------------------
 
-Place the programme in the TUV `INPUTS` folder (or alternatively the TUV
-input file in this programme folder).
+Place the programme in a folder in the TUV `INPUTS` folder. The programme
+is designed to be incorporated as a git submodule in the TUV `INPUTS`
+folder. Alternatively, you can copy the TUV input file to the folder
+level above the repository.
 
 Run programme with:
 
@@ -59,17 +61,16 @@ Run programme with:
 ```
 
 The first programme argument specifies the name of the input file. In the
-input file all reaction numbers will be written on the 2\. to 4\. character
-starting at l. 48 and up to the end line indicated by `===...`. All previous
-reaction numbers will be overwritten with consecutive numbers starting at 1.
+input file all reaction numbers will be written on the 2\. to 4\. character.
+All previous reaction numbers will be overwritten with consecutive numbers
+starting at 1.
 
 The second programme argument is a switch to toggle all reactions to true
 (using `T` or `t` as argument) or false (with `F` or `f`). To leave the
-switches as specified in the TUV input file use any other character
-(e.g., `0`).
+switches as specified in the TUV input file, leave the argument blank.
 
-The programme will modify each reaction line and print the output to a
-temporary output file named `ofile.txt / ofile.dat`. At the end the
+The programme will modify each reaction line and print the output to
+temporary output files named `ofile.txt / ofile.dat`. At the end, the
 tempoary output file is renamed with the name of the TUV input file.
 
 So be careful:
@@ -78,19 +79,7 @@ original TUV input file!__
 
 Content modified is:
 
-- the reaction number of photolysis reactions on character 2 - 4
-- if forced to `T` or `F`: the switch for photolysis reactions on char. 1
-- parameter `nmj` in the header with the total number of output (true)
+- The reaction number of photolysis reactions on character 2 - 4
+- If forced to `T` or `F`: the switch for photolysis reactions on char. 1
+- Parameter `nmj` in the header with the total number of output (true)
   reactions
-
-
-Open tasks
-----------
-
-The current programme version heavily relies on the fixed TUV format. To
-be more flexible, the initial read loop of the header could be transformed
-into a do while loop reading until the statement  
-`===== Available photolysis reactions:`  
-rather then reading a fixed number of 48 lines to be more flexible to
-changes in additional lines in the header or additional spectral
-weighting functions.
