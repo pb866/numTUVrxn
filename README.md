@@ -65,8 +65,7 @@ reaction numbers will be overwritten with consecutive numbers starting at 1.
 
 The second programme argument is a switch to toggle all reactions to true
 (using `T` or `t` as argument) or false (with `F` or `f`). To leave the
-switches as specified in the TUV input file use any other character
-(e.g., `0`).
+switches as specified in the TUV input file, leave the argument blank.
 
 The programme will modify each reaction line and print the output to a
 temporary output file named `ofile.txt / ofile.dat`. At the end the

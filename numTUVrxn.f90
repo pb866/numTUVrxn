@@ -21,17 +21,14 @@ PROGRAM numTUVrxn
     READ(*,*) ifile
   ENDIF
   ifile = TRIM(ADJUSTL(ifile))
+! Assure input file is in the folder level above
+  IF(INDEX(ifile,'/')<=0) THEN
+    ifile(4:) = ifile(:77)
+    ifile(:3) = '../'
+  ENDIF
 
 ! retrieve choice of reaction switch from 2nd programme argument
-! or ask for it:
   CALL getarg(2,reset)
-  IF(reset==' ') THEN
-    WRITE(*,'(A)') "Choose options for reaction flags:"
-    WRITE(*,'(A)') "T:       set all to true"
-    WRITE(*,'(A)') "F:       set all to false"
-    WRITE(*,'(A)') "<ENTER>: leave as it is"
-    READ(*,"(A)") reset
-  ENDIF
 
 ! Open input file and temporary output file:
   OPEN(11,file=ifile)
