@@ -7,7 +7,7 @@ PROGRAM numTUVrxn
 
   IMPLICIT NONE
 
-  INTEGER        :: i,nrxn
+  INTEGER        :: i,ierr,nrxn
   CHARACTER(80)  :: line,ifile
   CHARACTER(1)   :: reset
 
@@ -37,7 +37,7 @@ PROGRAM numTUVrxn
 !––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––!
 
 ! Read away header and spectral weighting functions:
-  head: DO i = 1, 48
+  head: DO WHILE (line /= '===== Available photolysis reactions:')
     READ(11,'(A)') line
     WRITE(12,'(A)') trim(line)
   ENDDO head
@@ -89,29 +89,28 @@ PROGRAM numTUVrxn
 
 ! Adjust parameter nmj
 
-! Re-open temporary output file and find line with parameter nmj
-  OPEN(13,FILE='ofile.dat')
+! Re-read temporary output file from the beginning
+! and print output to another temporary output file with adjusted parameter nmj
+
+! Rewind ofile.txt to top
   REWIND(12)
-  DO i = 1, 16
-    READ(12,'(A)') line
-    WRITE(13,'(A)') trim(line)
-  ENDDO
-  READ(12,'(A)') line
-! Overwrite parameter nmj according to editted photolysis reactions/switches
-  WRITE(line(61:66),'(I6)') nrxn
-  WRITE(13,'(A)') trim(line)
-! Re-write remaining lines unchanged
-  DO i = 18, 48
-    READ(12,'(A)') line
-    WRITE(13,'(A)') trim(line)
-  ENDDO
-  DO
-    READ(12,'(A)') line
-    WRITE(13,'(A)') trim(line)
-    IF(line(:3) == '===') THEN
+! Open 2nd temporary output file
+  OPEN(13,FILE='ofile.dat')
+! Loop over first output file
+  ll: DO
+!   Read again line by line
+    READ(12,'(A)',IOSTAT=ierr) line
+! Exit on end of file
+    IF(ierr<0) THEN
       EXIT
+     ELSEIF(ierr>0) THEN
+      STOP "Read error in temporary output file 'ofile.txt'!"
     ENDIF
-  ENDDO
+! Override number of output (true) reactions
+    IF(INDEX(line,'nmj')>0) WRITE(line(61:66),'(I6)') nrxn
+! Write (adjusted) lines to 2nd temporary file
+    WRITE(13,'(A)') trim(line)
+  ENDDO ll
 
 !––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––!
 
