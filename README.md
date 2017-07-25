@@ -49,21 +49,23 @@ to identify the end.
 Running the programme
 ---------------------
 
-Place the programme in a folder in the TUV `INPUTS` folder. The programme
-is designed to be incorporated as a git submodule in the TUV `INPUTS`
-folder. Alternatively, you can copy the TUV input file to the folder
-level above the repository.
+Clone the _numTUVrxn_ repository into the TUV `INPUTS` folder or initialise a git
+submodule. Alternatively, you can copy the TUV input file to the _numTUVrxn_
+repository.
 
-Run programme with:
+Run programme with the TUV input file (and relative or absolute folder path)
+as the first programme argument and an optional switch for the TUV flags as
+second programme argument; e.g. from the TUV INPUTS folder via:
 
 ```
-./numTUVrxn <TUV input file> <switch for reactions>
+./numTUVrxn/numTUVrxn <TUV input file> <switch for reactions>
 ```
 
-The first programme argument specifies the name of the input file. In the
-input file all reaction numbers will be written on the 2\. to 4\. character.
-All previous reaction numbers will be overwritten with consecutive numbers
-starting at 1.
+or from inside the repository via:
+
+```
+./numTUVrxn [../]<TUV input file> <switch for reactions>
+```
 
 The second programme argument is a switch to toggle all reactions to true
 (using `T` or `t` as argument) or false (with `F` or `f`). To leave the
@@ -83,3 +85,25 @@ Content modified is:
 - If forced to `T` or `F`: the switch for photolysis reactions on char. 1
 - Parameter `nmj` in the header with the total number of output (true)
   reactions
+
+
+Version history
+===============
+
+Version 1.1.1
+-------------
+- Reverting enforcment of input file in the folder level above to be able to call
+  the programme from the TUV INPUTS folder via `./numTUVrxn/numTUVrxn [arg list]`
+
+Version 1.1
+-----------
+- Enforcing the input file a folder level above, by adding `../` to the file name
+  if obsolete, to allow easy typing of input file names and incorporation of
+  numTUVrxn as git submodule in TUV.
+- No query, when switch for TUV flag is empty, now programme leaves flags unchanged.
+- Bug fixes to properly calculate number of true reactions and assign it to `nmj`
+
+Version 1.0
+-----------
+- First released version to renumber reactions in the TUV input file after changes
+- Numbers are enforced in a consecutive order starting at 1
