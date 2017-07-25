@@ -21,11 +21,6 @@ PROGRAM numTUVrxn
     READ(*,*) ifile
   ENDIF
   ifile = TRIM(ADJUSTL(ifile))
-! Assure input file is in the folder level above
-  IF(INDEX(ifile,'/')<=0) THEN
-    ifile(4:) = ifile(:77)
-    ifile(:3) = '../'
-  ENDIF
 
 ! retrieve choice of reaction switch from 2nd programme argument
   CALL getarg(2,reset)
