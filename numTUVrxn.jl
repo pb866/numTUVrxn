@@ -21,8 +21,14 @@ if isdir(joinpath(homedir(),"Util/auxdata/jl.mod")) &&
   all(LOAD_PATH.!=joinpath(homedir(),"Util/auxdata/jl.mod"))
   push!(LOAD_PATH,joinpath(homedir(),"Util/auxdata/jl.mod"))
 end
-import fhandle: test_file, rdfil
 
+try import fhandle: test_file, rdfil
+catch
+  download("https://raw.githubusercontent.com/pb866/auxdata/master/jl.mod/fhandle.jl",
+           joinpath(Base.source_dir(),"fhandle.jl"))
+  push!(LOAD_PATH,joinpath(Base.source_dir()))
+  import fhandle: test_file, rdfil
+end
 # Append ARGS by empty strings
 # to avoid error messages in case of missing input
 for i = 1:2-length(ARGS)  push!(ARGS," ")  end
