@@ -9,39 +9,28 @@ Preserve flags for output or set/unset all.
 """
 module numTUVrxn
 
-# Add path of self-made modules
-push!(LOAD_PATH,"$(pwd())/jl.mod")
+# Define location of external self-made modules
+# (Add or modify to include your own directories)
+# Local Mac:
+if isdir("/Applications/bin/data/jl.mod") &&
+  all(LOAD_PATH.!="/Applications/bin/data/jl.mod")
+  push!(LOAD_PATH,"/Applications/bin/data/jl.mod")
+end
+# earth0:
+if isdir(joinpath(homedir(),"Util/auxdata/jl.mod")) &&
+  all(LOAD_PATH.!=joinpath(homedir(),"Util/auxdata/jl.mod"))
+  push!(LOAD_PATH,joinpath(homedir(),"Util/auxdata/jl.mod"))
+end
+import fhandle: test_file, rdfil
 
 # Append ARGS by empty strings
 # to avoid error messages in case of missing input
-for i = 1:2  push!(ARGS," ")  end
+for i = 1:2-length(ARGS)  push!(ARGS," ")  end
 
 
 ################################################################################
 ### Functions:                                                                 #
 ################################################################################
-
-"""
-    rdfile(fname)
-
-Check existance of TUV input file or ask for correct input file and
-return correct file name and an array with all lines from the TUV file.
-"""
-function rdfile(fname)
-
-  # Ask for input file, if file given in first script argument doesn't exist
-  while isfile(fname) == false
-    print("\033[95m'$fname' does not exist.\033[0m Define TUV file: ")
-    fname = readline()
-  end
-
-  # Read content from input file and return file name and content
-  open(fname,"r+") do f
-    lines = readlines(f)
-    return fname, lines
-  end
-
-end #function get_fname
 
 
 """
@@ -97,8 +86,23 @@ function renumber(fl,flags,rxns,top,bottom)
   if lowercase(fl[1])=='t'  flags .= "T"; trxn = length(flags)
   # Set all flags to F, if fl = F,f,False,... and set number of flags to 0
   elseif lowercase(fl[1])=='f'  flags .= "F"; trxn = 0
-  # Otherwise count true flags
-  else  trxn = count(f->f=="T",flags)
+  # fl not specified, leave flags as they are
+  elseif fl==" "  trxn = count(f->f=="T",flags)
+  # if fl is file path, determine flags from md file
+  else
+    flags .= "F"
+    open(fl,"r") do f
+      for line in eachline(f)
+        if length(matchall(r"J\(",line))≥2
+          (nr,crxn) = strip.(split(line," | ")[3:4]); nr = parse(Int64,nr)
+          if rxns[nr] ≠ crxn
+            println("\033[95mWarning reaction labels in md file not identical to TUV input file for reaction $nr.\033[0m")
+          end
+          flags[nr] = "T"
+        end
+      end
+    end
+    trxn = count(f->f=="T",flags)
   end
 
   # Rewrite reaction section with consecutive reaction numbers starting at 1
@@ -151,7 +155,10 @@ end #function wrtfile
 ################################################################################
 
 # Get file name from script argument or user input and read content (lines)
-file,lines = rdfile(ARGS[1])
+ifile = ARGS[1]
+if splitdir(ifile)[1] == "" && basename(pwd()) == "numTUVrxn"  ifile = joinpath("..",ifile)  end
+ifile = test_file(ifile)
+lines = rdfil(ifile)
 # Split content in sections and get flags
 # and reaction strings from reaction section
 top, bottom, flags, rxns = get_rxn(lines)
@@ -159,6 +166,6 @@ top, bottom, flags, rxns = get_rxn(lines)
 # and return complete and revised file content
 lines = renumber(ARGS[2],flags,rxns,top,bottom)
 # Overwrite old TUV input file
-wrtfile(file,lines)
+wrtfile(ifile,lines)
 
 end #module numTUVrxn

@@ -6,7 +6,7 @@ Purpose
 
 This is a simple FORTRAN routine to relabel TUV photolysis reactions after
 ammendments. The programme relies on the fixed format of the TUV input file
-and is designed for TUV 5.2\. Consecutive 3-digit reaction numbers are
+and is designed for TUV 5.2. Consecutive 3-digit reaction numbers are
 assigned starting at 1.
 
 Compiling the programme
