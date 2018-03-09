@@ -1,17 +1,21 @@
-numTUVrxn
-=========
+Programme numTUVrxn
+===================
 
 Purpose
 -------
 
-This is a simple Julia script to relabel TUV photolysis reactions after
+This is a simple FORTRAN routine to relabel TUV photolysis reactions after
 ammendments. The programme relies on the fixed format of the TUV input file
 and is designed for TUV 5.2. Consecutive 3-digit reaction numbers are
 assigned starting at 1.
 
-Fortran routines have been developed for the same purpose, but are no longer
-supported. If you rather wish to use the fortran routines, see the
-[FORTRAN README](README_F90.md).
+The programme is not maintained anymore and has been replaced by a [Julia script](README_F90.md).
+
+Compiling the programme
+-----------------------
+
+Compile with `<compiler> numTUVrxn -o numTUVrxn`. The programme has been
+tested for the `gfortran` compiler.
 
 Preparing model runs
 --------------------
@@ -34,55 +38,48 @@ You can use any placeholder for the reaction number (e.g., spaces or 'x')
 as it is overwritten by the programme. The remaining parts of the line
 need to be specified explicitly. If you force all reactions to be true or
 false, the first charcater of each line will be overwritten as well. There
-is no need to adjust the parameter `nmj` for the number of output (i.e. true)
+is no need to adjust parameter `nmj` for the number of output (i.e. true)
 reactions as it is automatically calculated by the programme.
 
-You also need to stick to the overall file format with key words used by
+You also need to stay to the overall file format with key words used by
 TUV 5.2. The programme will search for `===== Available photolysis reactions:`
 to identify the beginning of the reaction scheme and for
 `===...`
 to identify the end.
 
 
-Running the script
-------------------
+Running the programme
+---------------------
 
-Clone the _numTUVrxn_ repository into the TUV `INPUTS` folder or initialise
-a git submodule. Alternatively, you can copy the TUV input file to the
-_numTUVrxn_ repository.
+Clone the _numTUVrxn_ repository into the TUV `INPUTS` folder or initialise a git
+submodule. Alternatively, you can copy the TUV input file to the _numTUVrxn_
+repository.
 
-Run the script with the TUV input file as the first programme argument
-and an optional switch for the TUV flags as second programme argument;
-e.g. from the TUV INPUTS folder via:
+Run programme with the TUV input file (and relative or absolute folder path)
+as the first programme argument and an optional switch for the TUV flags as
+second programme argument; e.g. from the TUV INPUTS folder via:
 
-    julia numTUVrxn/numTUVrxn.jl <TUV input file> [<switch for reactions>]
+```
+./numTUVrxn/numTUVrxn <TUV input file> <switch for reactions>
+```
 
 or from inside the repository via:
 
-    julia numTUVrxn.jl [../]<TUV input file> [<switch for reactions>]
-
-The scripts assumes to be a folder in the TUV inputs folder. For your
-convenience, you don't need to type the folder path, if you run the script
-inside the `numTUVrxn` folder, the script will automatically add `../` to
-the file name. This feature will only work, if you don't rename the
-repository.
-
-If you wish to modify TUV input files inside the `numTUVrxn`
-folder, you need to use `./` as a prefex of you file name, otherwise the
-script will look for the file in the parent folder. Alternatively, you
-could delete/comment out l. 165 in `numTUVrxn.jl`:
-
-```julia
-if splitdir(ifile)[1] == "" && basename(pwd()) == "numTUVrxn"  ifile = joinpath("..",ifile)  end
+```
+./numTUVrxn [../]<TUV input file> <switch for reactions>
 ```
 
 The second programme argument is a switch to toggle all reactions to true
 (using `T` or `t` as argument) or false (with `F` or `f`). To leave the
 switches as specified in the TUV input file, leave the argument blank.
 
-The programme will modify each reaction line and __will overwrite the
-orginal TUV input file! So be careful, all your actions are destructive.__
+The programme will modify each reaction line and print the output to
+temporary output files named `ofile.txt / ofile.dat`. At the end, the
+tempoary output file is renamed with the name of the TUV input file.
 
+So be careful:
+__All actions of the programme are destructive and will overwrite the
+original TUV input file!__
 
 Content modified is:
 
@@ -91,21 +88,9 @@ Content modified is:
 - Parameter `nmj` in the header with the total number of output (true)
   reactions
 
-[Additional checks](DSMACCchecks.md) are available for the DSMACC/MCM/GECKO-A model
-framework.
-
 
 Version history
 ===============
-
-Version 1.1.2
--------------
-- Script rewritten in `Julia`
-- Now optional enforcing of parent folder `../` depending on whether the
-  script is called from the `numTUVrxn` folder or the elsewhere
-- Additional feature to compare reaction numbers of the TUV input file
-  to a md file with DSMACC, MCM and TUV numbers and issue warnings for
-  mismatches
 
 Version 1.1.1
 -------------
