@@ -9,7 +9,7 @@ ammendments. The programme relies on the fixed format of the TUV input file
 and is designed for TUV 5.2. Consecutive 3-digit reaction numbers are
 assigned starting at 1.
 
-The programme is not maintained anymore and has been replaced by a [Julia script](README_F90.md).
+The programme is not maintained anymore and has been replaced by a [Julia script](README.md).
 
 Compiling the programme
 -----------------------
